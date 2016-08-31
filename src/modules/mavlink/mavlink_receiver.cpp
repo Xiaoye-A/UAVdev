@@ -125,6 +125,8 @@ MavlinkReceiver::MavlinkReceiver(Mavlink *parent) :
 	_time_offset_pub(nullptr),
 	_follow_target_pub(nullptr),
 	_transponder_report_pub(nullptr),
+	_endeff_frame_pub(nullptr),
+	_manipulator_joint_status_pub(nullptr),
 	_control_mode_sub(orb_subscribe(ORB_ID(vehicle_control_mode))),
 	_hil_frames(0),
 	_old_timestamp(0),
@@ -153,6 +155,71 @@ MavlinkReceiver::~MavlinkReceiver()
 	orb_unsubscribe(_control_mode_sub);
 }
 
+
+//void
+//MavlinkReceiver::handle_message_ENDEFF_FRAME_msg(mavlink_message_t *msg)
+//{
+//    mavlink_ENDEFF_FRAME_t traj;
+//    mavlink_msg_ENDEFF_FRAME_decode(msg, &traj);
+//
+//    struct ca_traj_struct_s f;
+//    memset(&f, 0, sizeof(f));
+//
+//    f.timestamp = hrt_absolute_time();
+//    f.seq_id = traj.seq_id;
+//    f.time_start_usec = traj.time_start_usec;
+//    f.time_stop_usec = traj.time_stop_usec;
+//    for(int i=0;i<28;i++)
+//        f.coefficients[i] = traj.coefficients[i];
+//
+//    if (_ENDEFF_FRAME_msg_pub == nullptr) {
+//        _ENDEFF_FRAME_msg_pub = orb_advertise(ORB_ID(ENDEFF_FRAME), &f);
+//
+//    } else {
+//        orb_publish(ORB_ID(ENDEFF_FRAME), _ENDEFF_FRAME_msg_pub, &f);
+//    }
+//}
+void
+MavlinkReceiver::handle_message_endeff_frame(mavlink_message_t *msg)
+{
+	mavlink_endeff_frame_t endeff_frame_data;
+	mavlink_msg_endeff_frame_decode(msg, &endeff_frame_data);
+
+   struct endeff_frame_s f;
+    memset(&f, 0, sizeof(f));
+
+    f.timestamp = hrt_absolute_time();
+    f.x = endeff_frame_data.x;
+
+    if (_endeff_frame_pub == nullptr) {
+    	_endeff_frame_pub = orb_advertise(ORB_ID(endeff_frame), &f);
+
+    } else {
+        orb_publish(ORB_ID(endeff_frame), _endeff_frame_pub, &f);
+    }
+}
+void
+MavlinkReceiver::handle_message_manipulator_joint_status(mavlink_message_t *msg)
+{
+	mavlink_manipulator_joint_status_t manipulator_joint_status_data;
+	mavlink_msg_manipulator_joint_status_decode(msg, &manipulator_joint_status_data);
+
+   struct manipulator_joint_status_s f;
+    memset(&f, 0, sizeof(f));
+
+    f.timestamp = hrt_absolute_time();
+    f.torque_1 = manipulator_joint_status_data.torque_1;
+
+    if (_manipulator_joint_status_pub == nullptr) {
+    	_manipulator_joint_status_pub = orb_advertise(ORB_ID(manipulator_joint_status), &f);
+
+    } else {
+        orb_publish(ORB_ID(manipulator_joint_status), _manipulator_joint_status_pub, &f);
+    }
+}
+
+
+
 void
 MavlinkReceiver::handle_message(mavlink_message_t *msg)
 {
@@ -170,6 +237,15 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 
 		break;
 
+//	case MAVLINK_MSG_ID_ENDEFF_FRAME:
+//	        handle_message_ENDEFF_FRAME_msg(msg);
+//	        break;
+	case MAVLINK_MSG_ID_ENDEFF_FRAME:
+		handle_message_endeff_frame(msg);
+		break;
+	case MAVLINK_MSG_ID_MANIPULATOR_JOINT_STATUS:
+			handle_message_manipulator_joint_status(msg);
+			break;
 	case MAVLINK_MSG_ID_COMMAND_INT:
 		if (_mavlink->accepting_commands()) {
 			handle_message_command_int(msg);

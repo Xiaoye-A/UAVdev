@@ -41,6 +41,20 @@
 
 #pragma once
 
+
+#include <uORB/topics/manipulator_joint_status.h>
+#include <uORB/topics/endeff_frame.h>
+//
+//
+//#include <v1.0/UAV_mani/mavlink.h>
+#include <v2.0/UAV_mani/mavlink_msg_endeff_frame.h>
+#include <v2.0/UAV_mani/mavlink_msg_manipulator_joint_status.h>
+//#include <v1.0/UAV_mani/testsuite.h>
+//#include <v1.0/UAV_mani/UAV_mani.h>
+//#include <v1.0/UAV_mani/version.h>
+
+
+
 #include <systemlib/perf_counter.h>
 #include <uORB/uORB.h>
 #include <uORB/topics/sensor_combined.h>
@@ -81,6 +95,9 @@
 #include "mavlink_ftp.h"
 
 #define PX4_EPOCH_SECS 1234567890ULL
+
+//void handle_message_ENDEFF_FRAME_msg(mavlink_message_t *msg);
+//orb_advert_t _ENDEFF_FRAME_msg_pub;
 
 class Mavlink;
 
@@ -144,6 +161,12 @@ private:
 	void handle_message_gps_rtcm_data(mavlink_message_t *msg);
 	void handle_message_battery_status(mavlink_message_t *msg);
 
+
+	void handle_message_endeff_frame(mavlink_message_t *msg);
+	void handle_message_manipulator_joint_status(mavlink_message_t *msg);
+
+
+
 	void *receive_thread(void *arg);
 
 	/**
@@ -185,6 +208,7 @@ private:
 	struct vehicle_local_position_s hil_local_pos;
 	struct vehicle_land_detected_s hil_land_detector;
 	struct vehicle_control_mode_s _control_mode;
+
 	orb_advert_t _global_pos_pub;
 	orb_advert_t _local_pos_pub;
 	orb_advert_t _attitude_pub;
@@ -217,6 +241,8 @@ private:
 	orb_advert_t _time_offset_pub;
 	orb_advert_t _follow_target_pub;
 	orb_advert_t _transponder_report_pub;
+	orb_advert_t _endeff_frame_pub;
+	orb_advert_t _manipulator_joint_status_pub;
 	static const int _gps_inject_data_pub_size = 4;
 	orb_advert_t _gps_inject_data_pub[_gps_inject_data_pub_size];
 	int _gps_inject_data_next_idx = 0;

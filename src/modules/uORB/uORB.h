@@ -88,6 +88,8 @@ enum ORB_PRIO {
  */
 #define ORB_ID(_name)		&__orb_##_name
 
+//#define ORB_ID(endeff_frame)		&__orb_##_name
+
 /**
  * Declare (prototype) the uORB metadata for a topic (used by code generators).
  *

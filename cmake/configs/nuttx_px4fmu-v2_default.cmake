@@ -81,6 +81,9 @@ set(config_module_list
 	modules/uavcan
 	modules/land_detector
 
+    modules/mavlink_msg_receive_test
+    modules/mavlink_msg_send_test
+
 	#
 	# Estimation modules (EKF/ SO3 / other filters)
 	#

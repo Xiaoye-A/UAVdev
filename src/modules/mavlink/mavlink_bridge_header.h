@@ -55,6 +55,7 @@ __BEGIN_DECLS
 #define MAVLINK_GET_CHANNEL_STATUS mavlink_get_channel_status
 
 #include <v2.0/mavlink_types.h>
+
 #include <unistd.h>
 
 
@@ -84,6 +85,8 @@ extern mavlink_status_t *mavlink_get_channel_status(uint8_t chan);
 extern mavlink_message_t *mavlink_get_channel_buffer(uint8_t chan);
 
 #include <v2.0/common/mavlink.h>
+
+#include <v2.0/UAV_mani/mavlink.h>
 
 __END_DECLS
 
